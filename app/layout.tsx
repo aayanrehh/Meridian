@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gen-Z Boss - Command Center",
-  description: "Gen-Z Boss Command Center for assistant-dean LinkedIn agent control.",
+  title: "Meridian — Level Up Gen-Z | Jerah Reeves",
+  description:
+    "Executive growth dashboard — Level Up Gen-Z twin engine for Jerah Reeves.",
 };
 
 export default function RootLayout({
@@ -27,8 +30,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#09090b] text-zinc-50">
+      <body className="min-h-full flex flex-col bg-black text-white">
         {children}
+        <Toaster theme="dark" position="bottom-right" />
       </body>
     </html>
   );

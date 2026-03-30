@@ -155,7 +155,7 @@ export function Sidebar({ activeHref = "/" }: { activeHref?: string }) {
             <div className="mt-3">
               <Button
                 type="button"
-                variant="subtle"
+                variant="ghost"
                 className="w-full justify-center border-white/10"
               >
                 <LogOut className="h-4 w-4" />
