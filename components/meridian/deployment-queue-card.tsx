@@ -127,7 +127,7 @@ export function DeploymentQueueCard({ className }: { className?: string }) {
     <>
       <Card
         className={cn(
-          "col-span-1 rounded-lg border border-zinc-800 bg-zinc-950/40 md:col-span-12",
+          "col-span-1 rounded-none border border-border bg-card md:col-span-12",
           "shadow-none",
           className
         )}

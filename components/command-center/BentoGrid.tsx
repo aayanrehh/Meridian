@@ -20,7 +20,7 @@ function TerminalPulse() {
         </div>
       </div>
 
-      <div className="mt-4 rounded-lg border border-white/10 bg-black/15 p-3">
+      <div className="mt-4 rounded-none border border-white/10 bg-black/15 p-3">
         <div className="flex items-start justify-between gap-6">
           <div className="space-y-1">
             <div className="text-zinc-500">status</div>
@@ -66,7 +66,7 @@ function NetworkIntelligence() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-white/10 bg-black/15 p-3">
+      <div className="rounded-none border border-white/10 bg-black/15 p-3">
         <div className="flex items-center justify-between gap-3">
           <div className="text-xs text-zinc-500">Viewer breakdown</div>
           <div className="text-xs text-zinc-300">total: 1,284</div>
@@ -184,7 +184,7 @@ function AgenticLeash() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-white/10 bg-black/15 p-4">
+      <div className="rounded-none border border-white/10 bg-black/15 p-4">
         <div className="space-y-4">
           <ToggleRow
             title="Auto-Drafting (Co-Pilot)"

@@ -9,7 +9,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-xl border border-white/10 bg-white/5 shadow-none",
+        "overflow-visible rounded-none border border-border bg-card shadow-none",
         className
       )}
       {...props}
@@ -36,7 +36,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "text-sm font-semibold tracking-tight text-zinc-50",
+        "font-heading text-sm font-semibold tracking-tight text-zinc-50",
         className
       )}
       {...props}

@@ -31,7 +31,7 @@ export function GrowthTrajectoryChart({ className }: { className?: string }) {
   return (
     <Card
       className={cn(
-        "relative overflow-hidden rounded-xl border border-emerald-900/50 bg-[#0A1A0F]/90 shadow-none",
+        "relative overflow-hidden rounded-none border border-border bg-card shadow-none",
         className
       )}
     >

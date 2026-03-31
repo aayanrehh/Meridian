@@ -26,7 +26,7 @@ export function NetworkRadarCard({ className }: { className?: string }) {
   return (
     <Card
       className={cn(
-        "col-span-1 flex flex-col rounded-lg border border-zinc-800 bg-zinc-950/40 shadow-none md:col-span-4",
+        "col-span-1 flex flex-col rounded-none border border-border bg-card shadow-none md:col-span-4",
         className
       )}
     >

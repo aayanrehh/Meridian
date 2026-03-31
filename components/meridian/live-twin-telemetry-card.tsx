@@ -48,7 +48,7 @@ export function LiveTwinTelemetryCard({ className }: { className?: string }) {
     >
       <Card
         className={cn(
-          "relative z-10 overflow-hidden rounded-lg border-zinc-800 bg-zinc-950/92 shadow-none",
+          "relative z-10 overflow-hidden rounded-none border-border bg-card shadow-none",
           "ring-1 ring-zinc-800/90"
         )}
       >

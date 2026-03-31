@@ -25,7 +25,7 @@ export function LiveAgentActivityCard({ className }: { className?: string }) {
   return (
     <Card
       className={cn(
-        "rounded-xl border border-emerald-900/50 bg-[#0A1A0F]/90 shadow-none",
+        "rounded-none border border-border bg-card shadow-none",
         className
       )}
     >
@@ -43,9 +43,9 @@ export function LiveAgentActivityCard({ className }: { className?: string }) {
           return (
             <div
               key={item.label}
-              className="flex gap-3 rounded-lg border border-emerald-900/30 bg-[#040D06]/70 px-3 py-3"
+              className="flex gap-3 rounded-none border border-emerald-900/30 bg-[#040D06]/70 px-3 py-3"
             >
-              <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg border border-emerald-800/40 bg-emerald-950/50">
+              <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-none border border-emerald-800/40 bg-emerald-950/50">
                 <Icon
                   className="size-4 text-emerald-400"
                   aria-hidden

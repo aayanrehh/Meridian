@@ -68,7 +68,7 @@ export function Sidebar({ activeHref = "/" }: { activeHref?: string }) {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5"
+              className="flex h-10 w-10 items-center justify-center rounded-none border border-white/10 bg-white/5"
               aria-hidden="true"
             >
               <span className="text-sm font-semibold text-zinc-200">MB</span>
@@ -119,7 +119,7 @@ export function Sidebar({ activeHref = "/" }: { activeHref?: string }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm",
+                  "group relative flex items-center gap-3 rounded-none px-3 py-2 text-sm",
                   "border border-transparent",
                   "text-zinc-300 hover:text-zinc-50 hover:bg-white/5",
                   isActive &&
@@ -135,7 +135,7 @@ export function Sidebar({ activeHref = "/" }: { activeHref?: string }) {
 
         {/* Bottom profile + sign-out */}
         <div className="mt-auto">
-          <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-3">
+          <div className="mt-6 rounded-none border border-white/10 bg-white/5 p-3">
             <div className="flex items-center gap-3">
               <Avatar>
                 <AvatarFallback className="font-mono text-xs text-zinc-200">
