@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — Master Build Plan</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #080908;
+  --s1: #0c0e0c;
+  --s2: #101210;
+  --s3: #141714;
+  --border: #1c211c;
+  --border2: #232b23;
+  --g: #00e87a;
+  --g2: #00c96a;
+  --g3: rgba(0,232,122,0.07);
+  --g4: rgba(0,232,122,0.14);
+  --g5: rgba(0,232,122,0.22);
+  --amber: #e8a020;
+  --amber2: rgba(232,160,32,0.09);
+  --red: #e85050;
+  --red2: rgba(232,80,80,0.09);
+  --blue: #50a0e8;
+  --blue2: rgba(80,160,232,0.09);
+  --purple: #9878e8;
+  --purple2: rgba(152,120,232,0.09);
+  --teal: #20d4c8;
+  --teal2: rgba(32,212,200,0.09);
+  --text: #dce8dc;
+  --text2: #7a9080;
+  --text3: #3d4e3d;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+/* ─── TOPBAR ─── */
+.topbar {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(8,9,8,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 48px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.topbar-left { display: flex; align-items: center; gap: 20px; }
+.brand { font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: var(--text); }
+.brand em { color: var(--g); font-style: normal; }
+.sep { color: var(--text3); }
+.plan-id { font-family: var(--mono); font-size: 10px; color: var(--text2); letter-spacing: 0.08em; }
+.phase-nav { display: flex; gap: 2px; }
+.phase-pill {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 3px; cursor: pointer; text-decoration: none;
+  color: var(--text2); border: 1px solid transparent; transition: all 0.15s;
+}
+.phase-pill:hover { color: var(--g); border-color: var(--border2); background: var(--g3); }
+.phase-pill.p0 { color: var(--g); border-color: rgba(0,232,122,0.2); background: var(--g3); }
+
+/* ─── LAYOUT ─── */
+.wrap { display: flex; min-height: calc(100vh - 48px); }
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  background: var(--s1);
+  padding: 24px 0;
+  position: sticky; top: 48px;
+  height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+.sidebar-section { margin-bottom: 24px; }
+.sidebar-label {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text3); padding: 0 16px; margin-bottom: 6px;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 16px; font-size: 11px; color: var(--text2);
+  text-decoration: none; border-left: 2px solid transparent;
+  transition: all 0.12s; line-height: 1.4;
+}
+.sidebar-link:hover { color: var(--text); background: var(--s2); border-left-color: var(--border2); }
+.sidebar-link.active { color: var(--g); border-left-color: var(--g); background: var(--g3); }
+.snum { font-family: var(--mono); font-size: 9px; color: var(--text3); flex-shrink: 0; min-width: 20px; }
+.stack-badge {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 16px; font-size: 10px; font-family: var(--mono);
+  color: var(--text3); line-height: 1.4;
+}
+.stack-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─── MAIN ─── */
+.main { flex: 1; overflow: hidden; }
+
+/* ─── HERO ─── */
+.hero {
+  background: var(--s1);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 48px 36px;
+}
+.hero-eyebrow {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--g); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.hero-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border2); max-width: 60px; }
+.hero-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); margin-bottom: 8px; line-height: 1.2; }
+.hero-title span { color: var(--g); }
+.hero-sub { font-size: 13px; color: var(--text2); max-width: 640px; line-height: 1.6; margin-bottom: 24px; }
+.arch-row {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.arch-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border2);
+  background: var(--s2); font-family: var(--mono); font-size: 10px; color: var(--text2);
+}
+.arch-chip .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─── CONTENT ─── */
+.content { padding: 0 48px 80px; }
+
+/* ─── PHASE HEADER ─── */
+.phase-header {
+  padding: 32px 0 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+  display: flex; align-items: flex-start; gap: 16px;
+}
+.phase-num-box {
+  width: 40px; height: 40px; border-radius: 6px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  border: 1px solid;
+}
+.phase-num-box.p0 { background: var(--g4); border-color: var(--g5); color: var(--g); }
+.phase-num-box.p1 { background: var(--blue2); border-color: rgba(80,160,232,0.25); color: var(--blue); }
+.phase-num-box.p2 { background: var(--amber2); border-color: rgba(232,160,32,0.25); color: var(--amber); }
+.phase-num-box.p3 { background: var(--purple2); border-color: rgba(152,120,232,0.25); color: var(--purple); }
+.phase-num-box.p4 { background: var(--teal2); border-color: rgba(32,212,200,0.25); color: var(--teal); }
+.phase-num-box.p5 { background: var(--red2); border-color: rgba(232,80,80,0.25); color: var(--red); }
+.phase-meta {}
+.phase-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text2); margin-bottom: 3px; }
+.phase-name { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); margin-bottom: 4px; }
+.phase-desc { font-size: 12px; color: var(--text2); }
+.phase-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+
+/* ─── STEP ─── */
+.step {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.step-header {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--s2);
+}
+.step-num {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  min-width: 28px; flex-shrink: 0; padding-top: 1px;
+}
+.step-num.c0 { color: var(--g); }
+.step-num.c1 { color: var(--blue); }
+.step-num.c2 { color: var(--amber); }
+.step-num.c3 { color: var(--purple); }
+.step-num.c4 { color: var(--teal); }
+.step-num.c5 { color: var(--red); }
+.step-title { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+.step-tags { display: flex; gap: 5px; flex-wrap: wrap; flex-shrink: 0; }
+.tag {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 2px 6px; border-radius: 3px; border: 1px solid; font-weight: 500; white-space: nowrap;
+}
+.tag.infra { background: var(--blue2); border-color: rgba(80,160,232,0.2); color: var(--blue); }
+.tag.auth { background: var(--amber2); border-color: rgba(232,160,32,0.2); color: var(--amber); }
+.tag.db { background: var(--purple2); border-color: rgba(152,120,232,0.2); color: var(--purple); }
+.tag.n8n { background: var(--amber2); border-color: rgba(232,160,32,0.2); color: var(--amber); }
+.tag.ai { background: var(--g3); border-color: rgba(0,232,122,0.2); color: var(--g); }
+.tag.scrape { background: var(--teal2); border-color: rgba(32,212,200,0.2); color: var(--teal); }
+.tag.fe { background: var(--blue2); border-color: rgba(80,160,232,0.2); color: var(--blue); }
+.tag.deploy { background: var(--g3); border-color: rgba(0,232,122,0.2); color: var(--g); }
+.tag.critical { background: var(--red2); border-color: rgba(232,80,80,0.2); color: var(--red); }
+.tag.test { background: var(--amber2); border-color: rgba(232,160,32,0.2); color: var(--amber); }
+
+.step-body { padding: 16px 20px; }
+
+/* ─── INSTRUCTION ROWS ─── */
+.instruction {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px; color: var(--text2); line-height: 1.55;
+}
+.instruction:last-child { border-bottom: none; }
+.instruction-num {
+  font-family: var(--mono); font-size: 9px; color: var(--text3);
+  flex-shrink: 0; min-width: 24px; padding-top: 1px;
+}
+.instruction-text { flex: 1; }
+.instruction-text code {
+  font-family: var(--mono); font-size: 10px; color: var(--g);
+  background: var(--g3); border: 1px solid rgba(0,232,122,0.1);
+  padding: 0 4px; border-radius: 2px;
+}
+.instruction-text .path { color: var(--text2); }
+.instruction-text .val { color: var(--amber); font-family: var(--mono); font-size: 10px; }
+.instruction-text .warn { color: var(--red); font-weight: 500; }
+.instruction-text strong { color: var(--text); font-weight: 600; }
+
+/* ─── CODE BLOCKS ─── */
+.code-wrap {
+  background: #060706;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 12px 0 4px;
+}
+.code-header {
+  background: var(--s2);
+  border-bottom: 1px solid var(--border);
+  padding: 7px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.code-lang { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); }
+.code-fname { font-family: var(--mono); font-size: 10px; color: var(--text2); }
+pre {
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--text);
+  overflow-x: auto;
+  white-space: pre;
+}
+.kw { color: #c792ea; }
+.str { color: #c3e88d; }
+.com { color: var(--text3); font-style: italic; }
+.fn { color: #82aaff; }
+.num { color: #f78c6c; }
+.prop { color: var(--g); }
+.op { color: #89ddff; }
+.type { color: var(--amber); }
+.var { color: #eeffff; }
+
+/* ─── CALLOUTS ─── */
+.callout {
+  border-radius: 5px; padding: 12px 16px;
+  display: flex; gap: 10px; font-size: 12px; line-height: 1.55;
+  margin: 10px 0; border: 1px solid;
+}
+.callout.warn { background: var(--amber2); border-color: rgba(232,160,32,0.18); color: var(--text2); }
+.callout.warn .ci { color: var(--amber); }
+.callout.info { background: var(--blue2); border-color: rgba(80,160,232,0.18); color: var(--text2); }
+.callout.info .ci { color: var(--blue); }
+.callout.ok { background: var(--g3); border-color: rgba(0,232,122,0.18); color: var(--text2); }
+.callout.ok .ci { color: var(--g); }
+.callout.crit { background: var(--red2); border-color: rgba(232,80,80,0.18); color: var(--text2); }
+.callout.crit .ci { color: var(--red); }
+.callout strong { color: var(--text); }
+.ci { flex-shrink: 0; font-size: 13px; }
+
+/* ─── DEPENDENCY MAP ─── */
+.dep-flow {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  padding: 10px 14px; background: var(--s2); border-radius: 4px;
+  margin: 8px 0; font-family: var(--mono); font-size: 10px;
+}
+.dep-node { padding: 2px 7px; border-radius: 3px; border: 1px solid var(--border2); color: var(--text2); white-space: nowrap; }
+.dep-node.done { border-color: rgba(0,232,122,0.2); color: var(--g); background: var(--g3); }
+.dep-arrow { color: var(--text3); font-size: 11px; }
+
+/* ─── ENV TABLE ─── */
+.env-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 10px; margin: 10px 0; }
+.env-table th { background: var(--s2); padding: 7px 12px; text-align: left; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); border: 1px solid var(--border); }
+.env-table td { padding: 7px 12px; border: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+.ekey { color: var(--g); }
+.eval { color: var(--amber); }
+.edesc { color: var(--text2); font-size: 9px; }
+.ewhere { color: var(--blue); font-size: 9px; }
+
+/* ─── PHASE DIVIDER ─── */
+.phase-divider { height: 1px; background: var(--border2); margin: 40px 0 0; }
+
+/* ─── CHECKLIST ─── */
+.checklist { background: var(--s1); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-top: 8px; }
+.cl-header { background: var(--s2); padding: 9px 16px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 10px; color: var(--text2); }
+.cl-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 16px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--text2); line-height: 1.5; }
+.cl-item:last-child { border-bottom: none; }
+.cl-box { width: 12px; height: 12px; border: 1px solid var(--border2); border-radius: 2px; flex-shrink: 0; margin-top: 2px; }
+.cl-n { font-family: var(--mono); font-size: 9px; color: var(--text3); flex-shrink: 0; min-width: 22px; margin-top: 1px; }
+
+/* ─── FLOW DIAGRAM ─── */
+.flow-diagram {
+  background: var(--s2); border: 1px solid var(--border); border-radius: 5px;
+  padding: 16px; margin: 10px 0; font-family: var(--mono); font-size: 10px;
+}
+.flow-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+.flow-row:last-child { margin-bottom: 0; }
+.fn-node {
+  padding: 4px 10px; border-radius: 3px; border: 1px solid; font-size: 10px; white-space: nowrap;
+}
+.fn-node.fe { background: var(--blue2); border-color: rgba(80,160,232,0.2); color: var(--blue); }
+.fn-node.n8 { background: var(--amber2); border-color: rgba(232,160,32,0.2); color: var(--amber); }
+.fn-node.ai { background: var(--g3); border-color: rgba(0,232,122,0.2); color: var(--g); }
+.fn-node.db { background: var(--purple2); border-color: rgba(152,120,232,0.2); color: var(--purple); }
+.fn-node.sc { background: var(--teal2); border-color: rgba(32,212,200,0.2); color: var(--teal); }
+.fn-node.ext { background: var(--s1); border-color: var(--border2); color: var(--text2); }
+.fa { color: var(--text3); }
+.fl { font-size: 9px; color: var(--text3); white-space: nowrap; }
+.flow-label { font-size: 9px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; min-width: 80px; padding-right: 10px; border-right: 1px solid var(--border); margin-right: 8px; }
+
+/* ─── FOOTER ─── */
+.footer {
+  border-top: 1px solid var(--border); padding: 16px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--mono); font-size: 9px; color: var(--text3);
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="brand">Meridian <em>//</em> Twin Engine</div>
+    <div class="sep">—</div>
+    <div class="plan-id">MASTER BUILD PLAN · REV 2 · ANTIGRAVITY-READY</div>
+  </div>
+  <nav class="phase-nav">
+    <a href="#phase0" class="phase-pill p0">P0 Infra</a>
+    <a href="#phase1" class="phase-pill">P1 Deploy</a>
+    <a href="#phase2" class="phase-pill">P2 Auth+DB</a>
+    <a href="#phase3" class="phase-pill">P3 AI</a>
+    <a href="#phase4" class="phase-pill">P4 Scrape</a>
+    <a href="#phase5" class="phase-pill">P5 Ship</a>
+  </nav>
+</div>
+
+<div class="wrap">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Phases</div>
+    <a href="#phase0" class="sidebar-link active"><span class="snum">P0</span>Infrastructure</a>
+    <a href="#phase1" class="sidebar-link"><span class="snum">P1</span>LinkedIn Deploy</a>
+    <a href="#phase2" class="sidebar-link"><span class="snum">P2</span>Auth + Full DB</a>
+    <a href="#phase3" class="sidebar-link"><span class="snum">P3</span>AI Drafting</a>
+    <a href="#phase4" class="sidebar-link"><span class="snum">P4</span>Scraping</a>
+    <a href="#phase5" class="sidebar-link"><span class="snum">P5</span>Production Ship</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Stack</div>
+    <div class="stack-badge"><span class="stack-dot" style="background:var(--blue)"></span>Next.js 14 App Router</div>
+    <div class="stack-badge"><span class="stack-dot" style="background:var(--amber)"></span>n8n on Railway</div>
+    <div class="stack-badge"><span class="stack-dot" style="background:var(--purple)"></span>Supabase Postgres</div>
+    <div class="stack-badge"><span class="stack-dot" style="background:var(--g)"></span>Claude claude-sonnet-4-6</div>
+    <div class="stack-badge"><span class="stack-dot" style="background:var(--teal)"></span>Apify / Serper</div>
+    <div class="stack-badge"><span class="stack-dot" style="background:var(--text2)"></span>LinkedIn OAuth v2</div>
+    <div class="stack-badge"><span class="stack-dot" style="background:var(--blue)"></span>Vercel (frontend)</div>
+    <div class="stack-badge"><span class="stack-dot" style="background:var(--amber)"></span>Clerk / Supabase Auth</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Quick refs</div>
+    <a href="#step-docker" class="sidebar-link"><span class="snum">→</span>Docker Compose</a>
+    <a href="#step-schema" class="sidebar-link"><span class="snum">→</span>DB Schema</a>
+    <a href="#step-wf1" class="sidebar-link"><span class="snum">→</span>WF1 JSON</a>
+    <a href="#step-wf2" class="sidebar-link"><span class="snum">→</span>WF2 JSON</a>
+    <a href="#step-wf3" class="sidebar-link"><span class="snum">→</span>WF3 JSON</a>
+    <a href="#step-fetch" class="sidebar-link"><span class="snum">→</span>fetch() snippet</a>
+    <a href="#checklist" class="sidebar-link"><span class="snum">→</span>Ship checklist</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Antigravity IDE · Master Build Plan</div>
+  <div class="hero-title">Build Meridian.<br><span>End-to-end, phase by phase.</span></div>
+  <div class="hero-sub">Consolidated from all architecture context. Every step is exact and ordered. No ambiguity. Follow phases sequentially — each phase depends on the previous one being complete and tested.</div>
+  <div class="arch-row">
+    <div class="arch-chip"><span class="dot" style="background:var(--blue)"></span>Next.js 14 + Tailwind + Shadcn</div>
+    <div class="arch-chip"><span class="dot" style="background:var(--amber)"></span>n8n self-hosted on Railway</div>
+    <div class="arch-chip"><span class="dot" style="background:var(--purple)"></span>Supabase Postgres · 4 tables</div>
+    <div class="arch-chip"><span class="dot" style="background:var(--g)"></span>Claude claude-sonnet-4-6</div>
+    <div class="arch-chip"><span class="dot" style="background:var(--teal)"></span>Apify + Serper scraping</div>
+    <div class="arch-chip"><span class="dot" style="background:var(--text2)"></span>LinkedIn REST API v2</div>
+    <div class="arch-chip"><span class="dot" style="background:var(--amber)"></span>Clerk or Supabase Auth</div>
+    <div class="arch-chip"><span class="dot" style="background:var(--blue)"></span>Vercel + Railway hosting</div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PHASE 0 — INFRASTRUCTURE
+═══════════════════════════════════════════════════════════════ -->
+<div id="phase0" class="phase-header">
+  <div class="phase-num-box p0">P0</div>
+  <div class="phase-meta">
+    <div class="phase-label">Phase 0 · Days 1–2 · Do this first, no exceptions</div>
+    <div class="phase-name">Infrastructure — Docker, Railway, Supabase</div>
+    <div class="phase-desc">Everything else depends on this. Get n8n running with a public HTTPS URL and Supabase schema created before writing a single line of Next.js integration code.</div>
+    <div class="phase-tags">
+      <span class="tag infra">INFRA</span>
+      <span class="tag db">DATABASE</span>
+      <span class="tag critical">CRITICAL PATH</span>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div id="step-docker" class="step">
+  <div class="step-header">
+    <div class="step-num c0">S.01</div>
+    <div class="step-title">Create docker-compose.yml for self-hosted n8n</div>
+    <div class="step-tags"><span class="tag infra">INFRA</span><span class="tag n8n">N8N</span></div>
+  </div>
+  <div class="step-body">
+    <div class="instruction"><span class="instruction-num">1.1</span><span class="instruction-text">Create a new directory: <code>mkdir meridian-n8n && cd meridian-n8n</code></span></div>
+    <div class="instruction"><span class="instruction-num">1.2</span><span class="instruction-text">Create <code>.env</code> file in this directory with all variables from the env table in Step S.02. <span class="warn">Never commit this file.</span> Add <code>.env</code> to <code>.gitignore</code> immediately.</span></div>
+    <div class="instruction"><span class="instruction-num">1.3</span><span class="instruction-text">Create <code>docker-compose.yml</code> with the exact content below. The <code>n8n_data</code> volume persists credentials across container restarts — without this, every restart destroys your LinkedIn OAuth token.</span></div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">YAML</span><span class="code-fname">meridian-n8n/docker-compose.yml</span></div>
+      <pre><span class="kw">version</span>: <span class="str">'3.8'</span>
+<span class="kw">services</span>:
+  <span class="prop">n8n</span>:
+    <span class="kw">image</span>: n8nio/n8n:latest
+    <span class="kw">restart</span>: always
+    <span class="kw">ports</span>:
+      - <span class="str">"5678:5678"</span>
+    <span class="kw">environment</span>:
+      <span class="com"># Public URL — set to ngrok during dev, Railway URL after deploy</span>
+      - <span class="prop">N8N_WEBHOOK_URL</span>=${N8N_WEBHOOK_URL}
+      - <span class="prop">N8N_BASIC_AUTH_ACTIVE</span>=true
+      - <span class="prop">N8N_BASIC_AUTH_USER</span>=admin
+      - <span class="prop">N8N_BASIC_AUTH_PASSWORD</span>=${N8N_BASIC_AUTH_PASSWORD}
+      - <span class="prop">GENERIC_TIMEZONE</span>=America/New_York
+      - <span class="prop">TZ</span>=America/New_York
+      <span class="com"># CORS: allow Next.js to POST to webhooks from both local and Vercel</span>
+      - <span class="prop">N8N_CORS_ORIGIN</span>=https://your-app.vercel.app,http://localhost:3000
+      <span class="com"># Disable telemetry/personalization prompts</span>
+      - <span class="prop">N8N_DIAGNOSTICS_ENABLED</span>=false
+      - <span class="prop">N8N_PERSONALIZATION_ENABLED</span>=false
+      <span class="com"># Expose these so n8n Code nodes can access them via $env.*</span>
+      - <span class="prop">ANTHROPIC_API_KEY</span>=${ANTHROPIC_API_KEY}
+      - <span class="prop">SUPABASE_URL</span>=${SUPABASE_URL}
+      - <span class="prop">SUPABASE_SERVICE_ROLE_KEY</span>=${SUPABASE_SERVICE_ROLE_KEY}
+      - <span class="prop">SERPER_API_KEY</span>=${SERPER_API_KEY}
+    <span class="kw">volumes</span>:
+      - <span class="str">n8n_data:/home/node/.n8n</span>
+<span class="kw">volumes</span>:
+  <span class="prop">n8n_data</span>:</pre>
+    </div>
+    <div class="instruction"><span class="instruction-num">1.4</span><span class="instruction-text">Start n8n locally: <code>docker compose up -d</code>. Confirm it's running at <code>http://localhost:5678</code>.</span></div>
+    <div class="instruction"><span class="instruction-num">1.5</span><span class="instruction-text">Start ngrok tunnel for local dev: <code>ngrok http 5678</code>. Copy the <span class="val">https://xxxx.ngrok-free.app</span> URL. Set this as <code>N8N_WEBHOOK_URL</code> in your <code>.env</code> and restart: <code>docker compose down && docker compose up -d</code>.</span></div>
+    <div class="callout warn"><span class="ci">⚠</span><span>n8n must know its own public URL at startup — otherwise webhook URLs it generates will be wrong (pointing to localhost). If you change ngrok URLs, you must restart the container.</span></div>
+  </div>
+</div>
+
+<!-- STEP 2 — ENV VARS -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num c0">S.02</div>
+    <div class="step-title">Environment Variables — all locations</div>
+    <div class="step-tags"><span class="tag infra">CONFIG</span><span class="tag critical">NEVER COMMIT</span></div>
+  </div>
+  <div class="step-body">
+    <div class="callout crit"><span class="ci">✕</span><span><strong>Add <code>.env</code>, <code>.env.local</code>, <code>.env*.local</code> to <code>.gitignore</code> before your first commit.</strong> LinkedIn OAuth tokens and API keys in a public repo = compromised client.</span></div>
+    <table class="env-table">
+      <tr><th>Variable</th><th>Where to get it</th><th>Used in</th></tr>
+      <tr><td><span class="ekey">N8N_WEBHOOK_URL</span></td><td><span class="ewhere">ngrok URL (dev) / Railway domain (prod)</span></td><td><span class="edesc">docker-compose.yml</span></td></tr>
+      <tr><td><span class="ekey">N8N_BASIC_AUTH_PASSWORD</span></td><td><span class="ewhere">Generate: openssl rand -base64 24</span></td><td><span class="edesc">docker-compose.yml</span></td></tr>
+      <tr><td><span class="ekey">ANTHROPIC_API_KEY</span></td><td><span class="ewhere">console.anthropic.com → API Keys</span></td><td><span class="edesc">docker-compose.yml + n8n env</span></td></tr>
+      <tr><td><span class="ekey">SUPABASE_URL</span></td><td><span class="ewhere">Supabase project → Settings → API</span></td><td><span class="edesc">docker-compose.yml + Next.js</span></td></tr>
+      <tr><td><span class="ekey">SUPABASE_SERVICE_ROLE_KEY</span></td><td><span class="ewhere">Supabase → Settings → API → service_role</span></td><td><span class="edesc">docker-compose.yml (n8n inserts)</span></td></tr>
+      <tr><td><span class="ekey">NEXT_PUBLIC_SUPABASE_URL</span></td><td><span class="ewhere">Same as SUPABASE_URL</span></td><td><span class="edesc">Next.js .env.local (client-side safe)</span></td></tr>
+      <tr><td><span class="ekey">NEXT_PUBLIC_SUPABASE_ANON_KEY</span></td><td><span class="ewhere">Supabase → Settings → API → anon public</span></td><td><span class="edesc">Next.js .env.local</span></td></tr>
+      <tr><td><span class="ekey">NEXT_PUBLIC_N8N_WEBHOOK_DEPLOY</span></td><td><span class="ewhere">n8n Webhook node URL after activation (WF1)</span></td><td><span class="edesc">Next.js .env.local</span></td></tr>
+      <tr><td><span class="ekey">NEXT_PUBLIC_N8N_WEBHOOK_GENERATE</span></td><td><span class="ewhere">n8n Webhook node URL after activation (WF2)</span></td><td><span class="edesc">Next.js .env.local</span></td></tr>
+      <tr><td><span class="ekey">SERPER_API_KEY</span></td><td><span class="ewhere">serper.dev → Dashboard → API Key</span></td><td><span class="edesc">docker-compose.yml + n8n env (WF3)</span></td></tr>
+      <tr><td><span class="ekey">LINKEDIN_CLIENT_ID</span></td><td><span class="ewhere">LinkedIn Developer Portal → your app</span></td><td><span class="edesc">n8n OAuth2 credential UI</span></td></tr>
+      <tr><td><span class="ekey">LINKEDIN_CLIENT_SECRET</span></td><td><span class="ewhere">LinkedIn Developer Portal → your app</span></td><td><span class="edesc">n8n OAuth2 credential UI</span></td></tr>
+      <tr><td><span class="ekey">APIFY_API_TOKEN</span></td><td><span class="ewhere">console.apify.com → Settings → Integrations</span></td><td><span class="edesc">n8n HTTP Request node (WF3)</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- STEP 3 — SUPABASE SCHEMA -->
+<div id="step-schema" class="step">
+  <div class="step-header">
+    <div class="step-num c0">S.03</div>
+    <div class="step-title">Create Supabase project + run full schema</div>
+    <div class="step-tags"><span class="tag db">DATABASE</span></div>
+  </div>
+  <div class="step-body">
+    <div class="instruction"><span class="instruction-num">3.1</span><span class="instruction-text">Create new project at <code>supabase.com</code>. Region: US East (closest to Railway). Save the password — you'll need it.</span></div>
+    <div class="instruction"><span class="instruction-num">3.2</span><span class="instruction-text">Go to <strong>SQL Editor → New Query</strong>. Paste and run the entire schema below. This creates all 4 tables the architecture requires: <code>clients</code>, <code>posts</code>, <code>deployments</code>, <code>scrape_items</code>.</span></div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">SQL</span><span class="code-fname">Supabase SQL Editor → run once</span></div>
+      <pre><span class="com">-- ─── CLIENTS TABLE ──────────────────────────────────────────────</span>
+<span class="com">-- Multi-tenant: each row = one Meridian client (e.g., Jerah Reeves)</span>
+<span class="kw">create table</span> <span class="fn">clients</span> (
+  id            <span class="type">uuid</span>        <span class="kw">default</span> <span class="fn">gen_random_uuid</span>() <span class="kw">primary key</span>,
+  created_at    <span class="type">timestamptz</span> <span class="kw">default</span> <span class="fn">now</span>(),
+  name          <span class="type">text</span>        <span class="kw">not null</span>,
+  title         <span class="type">text</span>,                           <span class="com">-- "Gen-Z Business Dean"</span>
+  linkedin_urn  <span class="type">text</span>,                           <span class="com">-- "urn:li:person:xxxx"</span>
+  voice_profile <span class="type">text</span>,                           <span class="com">-- system prompt / bio blob</span>
+  core_thesis   <span class="type">text</span>,                           <span class="com">-- "I help Gen-Z thrive..."</span>
+  followers     <span class="type">integer</span>     <span class="kw">default</span> <span class="num">0</span>,
+  auth_user_id  <span class="type">uuid</span>        <span class="kw">references</span> auth.users(id) <span class="kw">on delete cascade</span>
+);
+
+<span class="com">-- ─── SCRAPE_ITEMS TABLE ─────────────────────────────────────────</span>
+<span class="com">-- Raw content ingested from Google News, Twitter/X, LinkedIn, Reddit, RSS</span>
+<span class="kw">create table</span> <span class="fn">scrape_items</span> (
+  id          <span class="type">uuid</span>        <span class="kw">default</span> <span class="fn">gen_random_uuid</span>() <span class="kw">primary key</span>,
+  created_at  <span class="type">timestamptz</span> <span class="kw">default</span> <span class="fn">now</span>(),
+  client_id   <span class="type">uuid</span>        <span class="kw">references</span> clients(id) <span class="kw">on delete cascade</span>,
+  source      <span class="type">text</span>        <span class="kw">not null</span>,   <span class="com">-- 'google_news' | 'twitter' | 'reddit' | 'rss'</span>
+  url         <span class="type">text</span>,
+  title       <span class="type">text</span>,
+  body        <span class="type">text</span>,                    <span class="com">-- raw scraped text</span>
+  relevance   <span class="type">numeric</span>,                <span class="com">-- 0.0–1.0, set by Claude</span>
+  used        <span class="type">boolean</span>     <span class="kw">default</span> <span class="kw">false</span>  <span class="com">-- true after a draft references it</span>
+);
+
+<span class="com">-- ─── POSTS TABLE ────────────────────────────────────────────────</span>
+<span class="com">-- AI-generated drafts before they enter the deployment queue</span>
+<span class="kw">create table</span> <span class="fn">posts</span> (
+  id            <span class="type">uuid</span>        <span class="kw">default</span> <span class="fn">gen_random_uuid</span>() <span class="kw">primary key</span>,
+  created_at    <span class="type">timestamptz</span> <span class="kw">default</span> <span class="fn">now</span>(),
+  client_id     <span class="type">uuid</span>        <span class="kw">references</span> clients(id) <span class="kw">on delete cascade</span>,
+  asset_type    <span class="type">text</span>        <span class="kw">not null</span>,   <span class="com">-- 'LinkedIn Post' | 'Comment Reply' | 'Carousel'</span>
+  focus         <span class="type">text</span>        <span class="kw">not null</span>,   <span class="com">-- topic / context string shown in queue table</span>
+  content       <span class="type">text</span>        <span class="kw">not null</span>,   <span class="com">-- the draft text</span>
+  scrape_item_id <span class="type">uuid</span>       <span class="kw">references</span> scrape_items(id),  <span class="com">-- source material</span>
+  generation    <span class="type">integer</span>     <span class="kw">default</span> <span class="num">1</span>,  <span class="com">-- increments on regenerate</span>
+  status        <span class="type">text</span>        <span class="kw">default</span> <span class="str">'draft'</span>  <span class="com">-- 'draft' | 'queued' | 'approved'</span>
+);
+
+<span class="com">-- ─── DEPLOYMENTS TABLE ──────────────────────────────────────────</span>
+<span class="com">-- Tracks every LinkedIn publish action — the Deployment Queue in the UI</span>
+<span class="kw">create table</span> <span class="fn">deployments</span> (
+  id               <span class="type">uuid</span>        <span class="kw">default</span> <span class="fn">gen_random_uuid</span>() <span class="kw">primary key</span>,
+  created_at       <span class="type">timestamptz</span> <span class="kw">default</span> <span class="fn">now</span>(),
+  client_id        <span class="type">uuid</span>        <span class="kw">references</span> clients(id) <span class="kw">on delete cascade</span>,
+  post_id          <span class="type">uuid</span>        <span class="kw">references</span> posts(id),
+  content_snapshot <span class="type">text</span>        <span class="kw">not null</span>,   <span class="com">-- snapshot of text at time of deploy</span>
+  status           <span class="type">text</span>        <span class="kw">default</span> <span class="str">'pending'</span>, <span class="com">-- 'pending'|'deployed'|'failed'|'scheduled'</span>
+  linkedin_post_id <span class="type">text</span>,                       <span class="com">-- returned by LinkedIn API after publish</span>
+  scheduled_for    <span class="type">timestamptz</span>,               <span class="com">-- null = deploy immediately</span>
+  deployed_at      <span class="type">timestamptz</span>,
+  error_message    <span class="type">text</span>                        <span class="com">-- filled if status = 'failed'</span>
+);
+
+<span class="com">-- ─── INDEXES ────────────────────────────────────────────────────</span>
+<span class="kw">create index on</span> deployments (client_id, status, created_at <span class="kw">desc</span>);
+<span class="kw">create index on</span> posts (client_id, status, created_at <span class="kw">desc</span>);
+<span class="kw">create index on</span> scrape_items (client_id, used, created_at <span class="kw">desc</span>);
+
+<span class="com">-- ─── ROW LEVEL SECURITY ─────────────────────────────────────────</span>
+<span class="kw">alter table</span> clients     <span class="kw">enable row level security</span>;
+<span class="kw">alter table</span> posts        <span class="kw">enable row level security</span>;
+<span class="kw">alter table</span> deployments  <span class="kw">enable row level security</span>;
+<span class="kw">alter table</span> scrape_items <span class="kw">enable row level security</span>;
+
+<span class="com">-- Service role (n8n) bypasses RLS — it has full access via service_role key</span>
+<span class="com">-- Auth users can only see their own client's data — Phase 2 adds these policies</span></pre>
+    </div>
+    <div class="instruction"><span class="instruction-num">3.3</span><span class="instruction-text">Verify all 4 tables appear in <strong>Table Editor</strong>. Confirm RLS shows as enabled on each.</span></div>
+    <div class="instruction"><span class="instruction-num">3.4</span><span class="instruction-text">Insert the Jerah Reeves client row manually for Phase 0 MVP: <strong>Table Editor → clients → Insert row</strong>. Name: <span class="val">Jerah Reeves</span>, title: <span class="val">Gen-Z Business Dean | Binghamton University SOM</span>. Copy the generated UUID — you'll need it in n8n workflows.</span></div>
+  </div>
+</div>
+
+<!-- STEP 4 — LINKEDIN DEV APP -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num c0">S.04</div>
+    <div class="step-title">LinkedIn Developer App — credentials and OAuth scopes</div>
+    <div class="step-tags"><span class="tag auth">AUTH</span><span class="tag critical">REQUIRED FOR P1</span></div>
+  </div>
+  <div class="step-body">
+    <div class="instruction"><span class="instruction-num">4.1</span><span class="instruction-text">Go to <code>developer.linkedin.com</code> → Create App. App name: <span class="val">Meridian Twin Engine</span>. Associate with Jerah's LinkedIn company page.</span></div>
+    <div class="instruction"><span class="instruction-num">4.2</span><span class="instruction-text">In the app's <strong>Products</strong> tab, request access to: <span class="val">Share on LinkedIn</span> and <span class="val">Sign In with LinkedIn using OpenID Connect</span>. These activate the scopes you need.</span></div>
+    <div class="instruction"><span class="instruction-num">4.3</span><span class="instruction-text">In <strong>Auth</strong> tab, set OAuth 2.0 redirect URLs to: <span class="val">http://localhost:5678/rest/oauth2-credential/callback</span> (dev) and your Railway n8n URL equivalent (prod). Copy <strong>Client ID</strong> and <strong>Client Secret</strong>.</span></div>
+    <div class="instruction"><span class="instruction-num">4.4</span><span class="instruction-text">Required OAuth scopes: <code>openid</code>, <code>profile</code>, <code>email</code>, <code>w_member_social</code>. The <code>w_member_social</code> scope is what allows posting — confirm it's listed in your app's Auth tab under OAuth 2.0 scopes.</span></div>
+    <div class="callout warn"><span class="ci">⚠</span><span><strong>The n8n LinkedIn node uses outdated scopes.</strong> Do not use it. You will configure n8n's generic OAuth2 credential type and hit the LinkedIn REST API directly via HTTP Request nodes.</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PHASE 1 — LINKEDIN DEPLOY PIPELINE
+═══════════════════════════════════════════════════════════════ -->
+<div class="phase-divider"></div>
+<div id="phase1" class="phase-header">
+  <div class="phase-num-box p1">P1</div>
+  <div class="phase-meta">
+    <div class="phase-label">Phase 1 · Days 2–3 · Depends on P0 complete</div>
+    <div class="phase-name">LinkedIn Deploy Pipeline — Workflow 1</div>
+    <div class="phase-desc">The critical path. "Approve & Deploy" must actually post to LinkedIn. This is what Jerah sees in the demo.</div>
+    <div class="phase-tags"><span class="tag n8n">N8N</span><span class="tag auth">LINKEDIN OAUTH</span><span class="tag critical">DEMO BLOCKER</span></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num c1">S.05</div>
+    <div class="step-title">Configure LinkedIn OAuth2 credential in n8n</div>
+    <div class="step-tags"><span class="tag auth">OAUTH2</span></div>
+  </div>
+  <div class="step-body">
+    <div class="instruction"><span class="instruction-num">5.1</span><span class="instruction-text">In n8n dashboard: top-right menu → <strong>Credentials → New</strong>. Search for <span class="val">OAuth2 API</span> (generic type — not the LinkedIn-specific one).</span></div>
+    <div class="instruction"><span class="instruction-num">5.2</span><span class="instruction-text">Fill in the credential form:<br>
+      • <strong>Credential Name:</strong> <span class="val">LinkedIn OAuth2 — Jerah</span><br>
+      • <strong>Client ID:</strong> from Step 4.3<br>
+      • <strong>Client Secret:</strong> from Step 4.3<br>
+      • <strong>Authorization URL:</strong> <span class="val">https://www.linkedin.com/oauth/v2/authorization</span><br>
+      • <strong>Access Token URL:</strong> <span class="val">https://www.linkedin.com/oauth/v2/accessToken</span><br>
+      • <strong>Scope:</strong> <span class="val">openid profile email w_member_social</span><br>
+      • <strong>Auth URI Query Parameters:</strong> leave blank
+    </span></div>
+    <div class="instruction"><span class="instruction-num">5.3</span><span class="instruction-text">Click <strong>Connect my account</strong>. A LinkedIn window opens — log in as Jerah (or have Jerah approve it). After success, n8n stores the token. <span class="warn">The token expires — you'll need to re-auth before the live demo if it's been &gt;60 days.</span></span></div>
+  </div>
+</div>
+
+<!-- STEP 6 — WF1 IMPORT -->
+<div id="step-wf1" class="step">
+  <div class="step-header">
+    <div class="step-num c1">S.06</div>
+    <div class="step-title">Import and configure Workflow 1 — Approve & Deploy</div>
+    <div class="step-tags"><span class="tag n8n">N8N WORKFLOW</span><span class="tag critical">WF1</span></div>
+  </div>
+  <div class="step-body">
+    <div class="flow-diagram">
+      <div class="flow-row">
+        <span class="flow-label">WF1 FLOW</span>
+        <span class="fn-node fe">Next.js POST</span>
+        <span class="fa">→</span>
+        <span class="fn-node n8">Webhook</span>
+        <span class="fa">→</span>
+        <span class="fn-node n8">Validate Payload</span>
+        <span class="fa">→</span>
+        <span class="fn-node ext">GET /userinfo</span>
+        <span class="fa">→</span>
+        <span class="fn-node ext">POST /rest/posts</span>
+        <span class="fa">→</span>
+        <span class="fn-node db">PATCH deployments</span>
+        <span class="fa">→</span>
+        <span class="fn-node fe">200 OK</span>
+      </div>
+      <div class="flow-row" style="margin-left:88px">
+        <span class="fa" style="color:var(--red)">↓ on error</span>
+        <span class="fn-node" style="background:var(--red2);border-color:rgba(232,80,80,0.2);color:var(--red);margin-left:8px">Error Catch → 400 + message</span>
+      </div>
+    </div>
+    <div class="instruction"><span class="instruction-num">6.1</span><span class="instruction-text">In n8n: <strong>top-left → Import from JSON</strong>. Paste the full WF1 JSON from the previous handoff doc (workflow-1-deploy.json). Click Import.</span></div>
+    <div class="instruction"><span class="instruction-num">6.2</span><span class="instruction-text">Open the imported workflow. Click the <strong>"Get LinkedIn Profile"</strong> HTTP Request node → assign the <span class="val">LinkedIn OAuth2 — Jerah</span> credential you created in S.05.</span></div>
+    <div class="instruction"><span class="instruction-num">6.3</span><span class="instruction-text">Click the <strong>"Post to LinkedIn"</strong> HTTP Request node → also assign <span class="val">LinkedIn OAuth2 — Jerah</span>. Verify these headers are present:<br>
+      • <code>LinkedIn-Version: 202401</code><br>
+      • <code>X-Restli-Protocol-Version: 2.0.0</code><br>
+      • <code>Content-Type: application/json</code>
+    </span></div>
+    <div class="instruction"><span class="instruction-num">6.4</span><span class="instruction-text">In the <strong>"Post to LinkedIn"</strong> body, confirm the <code>author</code> field reads: <code>="urn:li:person:" + $('Get LinkedIn Profile').first().json.sub</code>. The <code>.sub</code> field from <code>/userinfo</code> is the LinkedIn person ID.</span></div>
+    <div class="instruction"><span class="instruction-num">6.5</span><span class="instruction-text">Click <strong>Activate</strong> (toggle top-right). The Webhook node will show its production URL. Copy this URL and set it as <code>NEXT_PUBLIC_N8N_WEBHOOK_DEPLOY</code> in Next.js <code>.env.local</code>.</span></div>
+    <div class="instruction"><span class="instruction-num">6.6</span><span class="instruction-text"><strong>Test with Postman first:</strong> POST to the webhook URL with body <code>{"text": "Hello World test post.", "assetId": null}</code>. Confirm 200 response and check Jerah's LinkedIn profile for the test post. Delete the test post immediately after confirming.</span></div>
+  </div>
+</div>
+
+<!-- STEP 7 — FRONTEND APPROVE -->
+<div id="step-fetch" class="step">
+  <div class="step-header">
+    <div class="step-num c1">S.07</div>
+    <div class="step-title">Wire "Approve & Deploy" button in Next.js Sheet component</div>
+    <div class="step-tags"><span class="tag fe">FRONTEND</span><span class="tag n8n">INTEGRATION</span></div>
+  </div>
+  <div class="step-body">
+    <div class="instruction"><span class="instruction-num">7.1</span><span class="instruction-text">Open the Shadcn <code>&lt;Sheet&gt;</code> component that opens on "Review & Deploy" click. Find the "Approve & Deploy" button. Replace its <code>onClick</code> with the handler below.</span></div>
+    <div class="instruction"><span class="instruction-num">7.2</span><span class="instruction-text">The handler receives <code>asset</code> (the deployment queue row) as a prop. The <code>asset.id</code> is the Supabase <code>deployments</code> row UUID — n8n uses it to PATCH the status to "deployed" after publishing.</span></div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-fname">components/deployment-sheet.tsx</span></div>
+      <pre><span class="com">// At top of component — add state</span>
+<span class="kw">const</span> [isDeploying, setIsDeploying] = <span class="fn">useState</span>(<span class="kw">false</span>);
+<span class="kw">const</span> textareaRef = <span class="fn">useRef</span>&lt;HTMLTextAreaElement&gt;(<span class="kw">null</span>);
+
+<span class="com">// Replace current onClick on "Approve & Deploy"</span>
+<span class="kw">const</span> <span class="fn">handleApproveAndDeploy</span> = <span class="kw">async</span> () => {
+  <span class="kw">const</span> postText = textareaRef.current?.value?.trim();
+  <span class="kw">if</span> (!postText) { <span class="fn">toast</span>.error(<span class="str">"Post content is empty."</span>); <span class="kw">return</span>; }
+  <span class="fn">setIsDeploying</span>(<span class="kw">true</span>);
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(process.env.<span class="prop">NEXT_PUBLIC_N8N_WEBHOOK_DEPLOY</span>!, {
+      method: <span class="str">"POST"</span>,
+      headers: { <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span> },
+      body: <span class="prop">JSON</span>.<span class="fn">stringify</span>({ text: postText, assetId: asset.id }),
+    });
+    <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+    <span class="kw">if</span> (res.ok && data.success) {
+      <span class="fn">toast</span>.success(<span class="str">"Post deployed to LinkedIn."</span>, { description: <span class="str">"Live on Jerah's profile."</span>, duration: <span class="num">5000</span> });
+      <span class="fn">onClose</span>();       <span class="com">// close the sheet</span>
+      <span class="fn">refreshQueue</span>(); <span class="com">// re-fetch Supabase deployments table</span>
+    } <span class="kw">else</span> {
+      <span class="fn">toast</span>.error(data.message ?? <span class="str">"Deploy failed — check n8n execution log."</span>);
+    }
+  } <span class="kw">catch</span> {
+    <span class="fn">toast</span>.error(<span class="str">"Cannot reach deploy service."</span>, { description: <span class="str">"Is n8n running on Railway?"</span> });
+  } <span class="kw">finally</span> {
+    <span class="fn">setIsDeploying</span>(<span class="kw">false</span>);
+  }
+};
+
+<span class="com">// The button — swap your static one</span>
+&lt;<span class="fn">Button</span> onClick={handleApproveAndDeploy} disabled={isDeploying} className=<span class="str">"w-full"</span>&gt;
+  {isDeploying
+    ? &lt;&gt;&lt;<span class="fn">Loader2</span> className=<span class="str">"mr-2 h-4 w-4 animate-spin"</span> /&gt;Deploying...&lt;/&gt;
+    : <span class="str">"Approve & Deploy"</span>}
+&lt;/<span class="fn">Button</span>&gt;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PHASE 2 — AUTH + FULL DB
+═══════════════════════════════════════════════════════════════ -->
+<div class="phase-divider"></div>
+<div id="phase2" class="phase-header">
+  <div class="phase-num-box p2">P2</div>
+  <div class="phase-meta">
+    <div class="phase-label">Phase 2 · Days 3–4 · Depends on P1 tested</div>
+    <div class="phase-name">Auth + Multi-tenant Data Isolation</div>
+    <div class="phase-desc">Lock down the data. Each operator login sees only their client's queue, posts, and scrape items. Use Supabase Auth (already in stack) or Clerk — choose one and commit.</div>
+    <div class="phase-tags"><span class="tag auth">AUTH</span><span class="tag db">RLS</span></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num c2">S.08</div>
+    <div class="step-title">Choose auth provider and install</div>
+    <div class="step-tags"><span class="tag auth">AUTH</span></div>
+  </div>
+  <div class="step-body">
+    <div class="callout info"><span class="ci">ℹ</span><span><strong>Decision point:</strong> Use <strong>Supabase Auth</strong> if you want zero extra cost and the RLS policies below work automatically. Use <strong>Clerk</strong> if you need better UI components (sign-in page, user management) and are comfortable with the Clerk → Supabase JWT sync setup. For Phase 0 MVP, skip auth entirely — hardcode the Jerah client_id.</span></div>
+    <div class="instruction"><span class="instruction-num">8.1</span><span class="instruction-text"><strong>If Supabase Auth:</strong> <code>npm install @supabase/supabase-js @supabase/ssr</code>. Create <code>lib/supabase/client.ts</code> and <code>lib/supabase/server.ts</code> using the Supabase SSR helpers for Next.js App Router.</span></div>
+    <div class="instruction"><span class="instruction-num">8.2</span><span class="instruction-text"><strong>If Clerk:</strong> <code>npm install @clerk/nextjs</code>. Wrap <code>app/layout.tsx</code> with <code>&lt;ClerkProvider&gt;</code>. Add <code>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> and <code>CLERK_SECRET_KEY</code> to <code>.env.local</code>.</span></div>
+    <div class="instruction"><span class="instruction-num">8.3</span><span class="instruction-text">Add RLS policies in Supabase SQL Editor so authenticated users only see their client's data:</span></div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">SQL</span><span class="code-fname">Supabase SQL Editor → run after schema</span></div>
+      <pre><span class="com">-- Users can only read clients they own</span>
+<span class="kw">create policy</span> <span class="str">"client owner access"</span> <span class="kw">on</span> clients
+  <span class="kw">for all using</span> (auth_user_id = <span class="fn">auth.uid</span>());
+
+<span class="com">-- Cascading: users access posts/deployments/scrape_items via client ownership</span>
+<span class="kw">create policy</span> <span class="str">"posts via client"</span> <span class="kw">on</span> posts
+  <span class="kw">for all using</span> (
+    client_id <span class="kw">in</span> (<span class="kw">select</span> id <span class="kw">from</span> clients <span class="kw">where</span> auth_user_id = <span class="fn">auth.uid</span>())
+  );
+
+<span class="kw">create policy</span> <span class="str">"deployments via client"</span> <span class="kw">on</span> deployments
+  <span class="kw">for all using</span> (
+    client_id <span class="kw">in</span> (<span class="kw">select</span> id <span class="kw">from</span> clients <span class="kw">where</span> auth_user_id = <span class="fn">auth.uid</span>())
+  );
+
+<span class="kw">create policy</span> <span class="str">"scrape_items via client"</span> <span class="kw">on</span> scrape_items
+  <span class="kw">for all using</span> (
+    client_id <span class="kw">in</span> (<span class="kw">select</span> id <span class="kw">from</span> clients <span class="kw">where</span> auth_user_id = <span class="fn">auth.uid</span>())
+  );</pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num c2">S.09</div>
+    <div class="step-title">Wire Deployment Queue — poll Supabase from Next.js</div>
+    <div class="step-tags"><span class="tag fe">FRONTEND</span><span class="tag db">SUPABASE</span></div>
+  </div>
+  <div class="step-body">
+    <div class="instruction"><span class="instruction-num">9.1</span><span class="instruction-text">Create <code>app/api/queue/route.ts</code> — a server-side API route that queries Supabase <code>deployments</code> table for the authenticated user's pending items.</span></div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-fname">app/api/queue/route.ts</span></div>
+      <pre><span class="kw">import</span> { <span class="var">createClient</span> } <span class="kw">from</span> <span class="str">'@/lib/supabase/server'</span>
+<span class="kw">import</span> { <span class="var">NextResponse</span> } <span class="kw">from</span> <span class="str">'next/server'</span>
+
+<span class="kw">export async function</span> <span class="fn">GET</span>() {
+  <span class="kw">const</span> supabase = <span class="fn">createClient</span>()
+  <span class="kw">const</span> { data, error } = <span class="kw">await</span> supabase
+    .<span class="fn">from</span>(<span class="str">'deployments'</span>)
+    .<span class="fn">select</span>(<span class="str">'*, posts(asset_type, focus, content)'</span>)
+    .<span class="fn">eq</span>(<span class="str">'status'</span>, <span class="str">'pending'</span>)
+    .<span class="fn">order</span>(<span class="str">'created_at'</span>, { <span class="prop">ascending</span>: <span class="kw">false</span> })
+    .<span class="fn">limit</span>(<span class="num">20</span>)
+
+  <span class="kw">if</span> (error) <span class="kw">return</span> <span class="var">NextResponse</span>.<span class="fn">json</span>({ error: error.message }, { status: <span class="num">500</span> })
+  <span class="kw">return</span> <span class="var">NextResponse</span>.<span class="fn">json</span>({ queue: data })
+}</pre>
+    </div>
+    <div class="instruction"><span class="instruction-num">9.2</span><span class="instruction-text">In the dashboard component that renders the Deployment Queue table, fetch <code>/api/queue</code> on mount and expose a <code>refreshQueue()</code> function you can call from the Sheet component after a successful deploy.</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PHASE 3 — AI DRAFTING
+═══════════════════════════════════════════════════════════════ -->
+<div class="phase-divider"></div>
+<div id="phase3" class="phase-header">
+  <div class="phase-num-box p3">P3</div>
+  <div class="phase-meta">
+    <div class="phase-label">Phase 3 · Day 4 · Depends on P0 + DB schema</div>
+    <div class="phase-name">AI Draft Generation — Workflow 2 + Carousels</div>
+    <div class="phase-desc">Claude claude-sonnet-4-6 generates voice-matched LinkedIn posts and carousel copy. Drafts land in Supabase → surface in the Deployment Queue.</div>
+    <div class="phase-tags"><span class="tag ai">CLAUDE API</span><span class="tag n8n">N8N WF2</span></div>
+  </div>
+</div>
+
+<div id="step-wf2" class="step">
+  <div class="step-header">
+    <div class="step-num c3">S.10</div>
+    <div class="step-title">Import and configure Workflow 2 — AI Draft Generator</div>
+    <div class="step-tags"><span class="tag ai">CLAUDE claude-sonnet-4-6</span><span class="tag n8n">WF2</span></div>
+  </div>
+  <div class="step-body">
+    <div class="flow-diagram">
+      <div class="flow-row">
+        <span class="flow-label">WF2 FLOW</span>
+        <span class="fn-node fe">POST /generate</span>
+        <span class="fa">→</span>
+        <span class="fn-node n8">Webhook</span>
+        <span class="fa">→</span>
+        <span class="fn-node n8">Build Prompt</span>
+        <span class="fa">→</span>
+        <span class="fn-node ai">Claude claude-sonnet-4-6</span>
+        <span class="fa">→</span>
+        <span class="fn-node n8">Parse Response</span>
+        <span class="fa">→</span>
+        <span class="fn-node db">INSERT posts + deployments</span>
+        <span class="fa">→</span>
+        <span class="fn-node fe">200 + draft</span>
+      </div>
+    </div>
+    <div class="instruction"><span class="instruction-num">10.1</span><span class="instruction-text">Import WF2 JSON from the previous handoff doc (workflow-2-ai-generator.json) the same way as WF1.</span></div>
+    <div class="instruction"><span class="instruction-num">10.2</span><span class="instruction-text">Open the <strong>"Call Claude API"</strong> node. In Headers, confirm <code>x-api-key</code> uses <code>={{ $env.ANTHROPIC_API_KEY }}</code> — this reads from the environment variable you set in docker-compose. Confirm model is set to <span class="val">claude-sonnet-4-6</span>.</span></div>
+    <div class="instruction"><span class="instruction-num">10.3</span><span class="instruction-text">Open the <strong>"Build Claude Prompt"</strong> Code node. Update the <code>systemContext</code> string with Jerah's real voice profile — his frameworks, bio, communication style, real examples of his posts. The more specific, the better the tone match. This is the core IP of Meridian.</span></div>
+    <div class="instruction"><span class="instruction-num">10.4</span><span class="instruction-text">After the <strong>"Parse Claude Response"</strong> node, add a second HTTP Request node to also insert a row into <code>deployments</code> table (not just <code>posts</code>) so the draft surfaces in the UI queue immediately.</span></div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">JSON (n8n body)</span><span class="code-fname">Add node: "Insert Deployment Row" — after "Insert to posts"</span></div>
+      <pre><span class="com">// HTTP Request node → POST to Supabase /rest/v1/deployments</span>
+<span class="com">// Same headers as the posts insert node (apikey, Authorization, Content-Type, Prefer)</span>
+<span class="com">// Body:</span>
+{
+  <span class="prop">"client_id"</span>: <span class="str">"={{ $('Build Claude Prompt').first().json.clientId }}"</span>,
+  <span class="prop">"post_id"</span>: <span class="str">"={{ $('Insert to posts').first().json[0].id }}"</span>,
+  <span class="prop">"content_snapshot"</span>: <span class="str">"={{ $('Parse Claude Response').first().json.draftText }}"</span>,
+  <span class="prop">"status"</span>: <span class="str">"pending"</span>
+}</pre>
+    </div>
+    <div class="instruction"><span class="instruction-num">10.5</span><span class="instruction-text">Activate WF2. Copy webhook URL → set as <code>NEXT_PUBLIC_N8N_WEBHOOK_GENERATE</code> in <code>.env.local</code>.</span></div>
+    <div class="instruction"><span class="instruction-num">10.6</span><span class="instruction-text">Test: POST <code>{"topic":"Translating athletic discipline to corporate resilience","assetType":"LinkedIn Post","clientId":"[jerah-uuid]"}</code>. Confirm 200 response with <code>draft</code> text. Confirm row appears in Supabase <code>posts</code> and <code>deployments</code> tables.</span></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num c3">S.11</div>
+    <div class="step-title">Carousel generation — Claude or Gemini</div>
+    <div class="step-tags"><span class="tag ai">AI CAROUSELS</span></div>
+  </div>
+  <div class="step-body">
+    <div class="callout info"><span class="ci">ℹ</span><span><strong>Phase 1 scope for carousels:</strong> Generate the slide copy (headline + body per slide) via Claude. Visual layout rendering is a separate concern — handle in Phase 4+ with a Puppeteer screenshot or a canvas-based renderer. Don't block the deploy demo on this.</span></div>
+    <div class="instruction"><span class="instruction-num">11.1</span><span class="instruction-text">In WF2's "Build Claude Prompt" Code node, add a branch: if <code>assetType === 'Carousel'</code>, use a different prompt that returns JSON structured as <code>[{slide: 1, headline: "...", body: "..."}, ...]</code>.</span></div>
+    <div class="instruction"><span class="instruction-num">11.2</span><span class="instruction-text">The carousel prompt should specify: <span class="val">5 slides, output only valid JSON array, no markdown, no preamble</span>. Strip any JSON fences in the Parse Response Code node before storing.</span></div>
+    <div class="instruction"><span class="instruction-num">11.3</span><span class="instruction-text">Store carousel content in the <code>posts.content</code> field as a JSON string. When the frontend detects <code>asset_type === 'Carousel'</code>, parse and render each slide object in the Sheet preview instead of a single textarea.</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PHASE 4 — SCRAPING PIPELINE
+═══════════════════════════════════════════════════════════════ -->
+<div class="phase-divider"></div>
+<div id="phase4" class="phase-header">
+  <div class="phase-num-box p4">P4</div>
+  <div class="phase-meta">
+    <div class="phase-label">Phase 4 · Day 4–5 · Can run in parallel with P3</div>
+    <div class="phase-name">Scraping Pipeline — Serper + Apify, Cron Trigger</div>
+    <div class="phase-desc">Ingest context from Google News, Twitter/X, LinkedIn, Reddit, RSS. Feed the best items into Claude as source material for hyper-contextual post generation.</div>
+    <div class="phase-tags"><span class="tag scrape">SCRAPING</span><span class="tag n8n">N8N WF3</span></div>
+  </div>
+</div>
+
+<div id="step-wf3" class="step">
+  <div class="step-header">
+    <div class="step-num c4">S.12</div>
+    <div class="step-title">Import Workflow 3 — Daily Scrape + AI Relevance Score</div>
+    <div class="step-tags"><span class="tag scrape">SERPER + APIFY</span><span class="tag n8n">WF3</span></div>
+  </div>
+  <div class="step-body">
+    <div class="flow-diagram">
+      <div class="flow-row">
+        <span class="flow-label">WF3 FLOW</span>
+        <span class="fn-node n8">Cron: 6am daily</span>
+        <span class="fa">→</span>
+        <span class="fn-node sc">Serper (Google News)</span>
+        <span class="fa">→</span>
+        <span class="fn-node sc">Apify (Twitter/Reddit)</span>
+        <span class="fa">→</span>
+        <span class="fn-node n8">Merge + Dedupe</span>
+        <span class="fa">→</span>
+        <span class="fn-node ai">Claude: score relevance</span>
+        <span class="fa">→</span>
+        <span class="fn-node db">INSERT scrape_items</span>
+        <span class="fa">→</span>
+        <span class="fn-node n8">Trigger WF2 for top 3</span>
+      </div>
+    </div>
+    <div class="instruction"><span class="instruction-num">12.1</span><span class="instruction-text">In n8n: create new workflow manually (or use the JSON below). Start with a <strong>Schedule Trigger</strong> node set to <span class="val">0 6 * * *</span> (6am ET daily).</span></div>
+    <div class="instruction"><span class="instruction-num">12.2</span><span class="instruction-text"><strong>Serper node (Google News):</strong> Add HTTP Request node. Method: POST. URL: <code>https://google.serper.dev/news</code>. Headers: <code>X-API-KEY: {{ $env.SERPER_API_KEY }}</code>, <code>Content-Type: application/json</code>. Body: <code>{"q": "Gen-Z workforce higher education business schools", "num": 10}</code>.</span></div>
+    <div class="instruction"><span class="instruction-num">12.3</span><span class="instruction-text"><strong>Apify node (Twitter scraper):</strong> Add HTTP Request node. POST to <code>https://api.apify.com/v2/acts/quacker~twitter-scraper/runs?token={{ $env.APIFY_API_TOKEN }}</code>. Body: <code>{"searchTerms": ["Gen-Z business", "university leadership", "Binghamton SOM"], "maxTweets": 20}</code>. Then poll the run status until complete and fetch results.</span></div>
+    <div class="instruction"><span class="instruction-num">12.4</span><span class="instruction-text">Add a <strong>Code node: Merge + Dedupe</strong>. Combine Serper and Apify results into a unified array. Deduplicate by URL. Output format: <code>[{source, url, title, body, client_id}]</code>.</span></div>
+    <div class="instruction"><span class="instruction-num">12.5</span><span class="instruction-text">Add a <strong>Code node: Build Relevance Prompt</strong>. For each item, construct a Claude prompt asking it to score 0.0–1.0 how relevant this item is to Jerah's content pillars. Batch them — send up to 5 at a time to avoid token limits.</span></div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">JavaScript (n8n Code node)</span><span class="code-fname">Build Relevance Prompt node</span></div>
+      <pre><span class="kw">const</span> items = $input.all().map(i => i.json);
+<span class="kw">const</span> scored = [];
+
+<span class="kw">for</span> (<span class="kw">const</span> item <span class="kw">of</span> items) {
+  scored.push({
+    json: {
+      ...item,
+      prompt: <span class="str">`Rate the relevance of this content (0.0-1.0) to these topics:
+- Gen-Z professional development and career transitions
+- University business education and leadership
+- Corporate culture, workforce trends, academic rigor
+
+Content title: ${item.title}
+Content snippet: ${item.body?.substring(0, 300)}
+
+Respond with ONLY a JSON object: {"score": 0.0, "reason": "one sentence"}`</span>
+    }
+  });
+}
+<span class="kw">return</span> scored;</pre>
+    </div>
+    <div class="instruction"><span class="instruction-num">12.6</span><span class="instruction-text">Add an HTTP Request node calling Claude API for each item's relevance prompt. Use the same Anthropic API call pattern as WF2. Parse the <code>score</code> from the response.</span></div>
+    <div class="instruction"><span class="instruction-num">12.7</span><span class="instruction-text">Add HTTP Request node: batch INSERT all items into <code>scrape_items</code> table with their relevance scores. Only insert items with <code>score &gt;= 0.5</code> to avoid polluting the table with irrelevant content.</span></div>
+    <div class="instruction"><span class="instruction-num">12.8</span><span class="instruction-text">Final step: filter to top 3 by score, then <strong>call WF2's webhook</strong> for each — passing the scrape item's title/body as the <code>topic</code> and the <code>scrapeItemId</code>. This auto-generates 3 fresh drafts every morning and surfaces them in the queue.</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PHASE 5 — PRODUCTION SHIP
+═══════════════════════════════════════════════════════════════ -->
+<div class="phase-divider"></div>
+<div id="phase5" class="phase-header">
+  <div class="phase-num-box p5">P5</div>
+  <div class="phase-meta">
+    <div class="phase-label">Phase 5 · Day 5 · Final gate before Jerah's call</div>
+    <div class="phase-name">Production Deploy — Vercel + Railway</div>
+    <div class="phase-desc">Everything moves from localhost/ngrok to real HTTPS URLs. The demo link Jerah receives must be a production URL.</div>
+    <div class="phase-tags"><span class="tag deploy">VERCEL</span><span class="tag deploy">RAILWAY</span></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num c5">S.13</div>
+    <div class="step-title">Deploy n8n to Railway</div>
+    <div class="step-tags"><span class="tag deploy">RAILWAY</span><span class="tag n8n">N8N</span></div>
+  </div>
+  <div class="step-body">
+    <div class="instruction"><span class="instruction-num">13.1</span><span class="instruction-text">Push the <code>meridian-n8n</code> directory to a GitHub repo (no secrets in the repo — only <code>docker-compose.yml</code> and <code>.gitignore</code>).</span></div>
+    <div class="instruction"><span class="instruction-num">13.2</span><span class="instruction-text">In Railway: New Project → Deploy from GitHub repo → select <code>meridian-n8n</code>. Railway will detect the <code>docker-compose.yml</code> and deploy it.</span></div>
+    <div class="instruction"><span class="instruction-num">13.3</span><span class="instruction-text">In Railway dashboard → your service → <strong>Variables</strong>: add all env vars from S.02 that the docker-compose references. Specifically: <code>N8N_WEBHOOK_URL</code> (use the Railway public domain you're about to generate), <code>N8N_BASIC_AUTH_PASSWORD</code>, <code>ANTHROPIC_API_KEY</code>, <code>SUPABASE_URL</code>, <code>SUPABASE_SERVICE_ROLE_KEY</code>, <code>SERPER_API_KEY</code>, <code>APIFY_API_TOKEN</code>.</span></div>
+    <div class="instruction"><span class="instruction-num">13.4</span><span class="instruction-text">In Railway → Settings → Networking: Generate a public domain (e.g., <span class="val">meridian-n8n.up.railway.app</span>). Set port to <span class="val">5678</span>. Copy this URL and set it as <code>N8N_WEBHOOK_URL</code> in Railway Variables. Redeploy.</span></div>
+    <div class="instruction"><span class="instruction-num">13.5</span><span class="instruction-text"><span class="warn">Critical:</span> After Railway deploy, <strong>re-import all three workflows</strong> into the Railway n8n instance. The local n8n's <code>n8n_data</code> volume doesn't transfer to Railway. You'll need to re-authenticate the LinkedIn OAuth2 credential in the Railway instance too.</span></div>
+    <div class="instruction"><span class="instruction-num">13.6</span><span class="instruction-text">Update Next.js <code>.env.local</code>: change <code>NEXT_PUBLIC_N8N_WEBHOOK_DEPLOY</code> and <code>NEXT_PUBLIC_N8N_WEBHOOK_GENERATE</code> from ngrok URLs to the Railway domain webhook URLs.</span></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num c5">S.14</div>
+    <div class="step-title">Deploy Next.js frontend to Vercel</div>
+    <div class="step-tags"><span class="tag deploy">VERCEL</span><span class="tag fe">NEXT.JS</span></div>
+  </div>
+  <div class="step-body">
+    <div class="instruction"><span class="instruction-num">14.1</span><span class="instruction-text">Push Next.js project to GitHub. Connect repo to Vercel via <code>vercel.com</code> → Add New Project.</span></div>
+    <div class="instruction"><span class="instruction-num">14.2</span><span class="instruction-text">In Vercel → Project Settings → <strong>Environment Variables</strong>: add all <code>NEXT_PUBLIC_*</code> vars from S.02. These will be baked into the build. Redeploy after adding.</span></div>
+    <div class="instruction"><span class="instruction-num">14.3</span><span class="instruction-text">In Railway n8n → your n8n service → Variables: update <code>N8N_CORS_ORIGIN</code> to include your Vercel domain: <span class="val">https://your-app.vercel.app</span>. Redeploy the Railway service.</span></div>
+    <div class="instruction"><span class="instruction-num">14.4</span><span class="instruction-text">Verify Vercel deploy is live at <code>https://your-app.vercel.app</code>. Click "Review & Deploy" on a queue item, click "Approve & Deploy", confirm success toast and LinkedIn post appears.</span></div>
+  </div>
+</div>
+
+<!-- FINAL CHECKLIST -->
+<div class="phase-divider"></div>
+<div id="checklist" class="phase-header">
+  <div class="phase-num-box p0">QA</div>
+  <div class="phase-meta">
+    <div class="phase-label">Final gate — all must pass before Jerah's call</div>
+    <div class="phase-name">Pre-Demo Ship Checklist</div>
+    <div class="phase-desc">Run through every item. If any fails, fix before sending the link.</div>
+  </div>
+</div>
+
+<div class="checklist">
+  <div class="cl-header">// INFRA</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">01</div>n8n accessible at Railway https:// URL — not localhost, not ngrok</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">02</div>n8n basic auth password set — dashboard not publicly open</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">03</div>All 3 workflows imported to Railway n8n and set to <strong>Active</strong></div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">04</div><code>n8n_data</code> volume persisting — restart Railway service and confirm credentials survive</div>
+</div>
+
+<div class="checklist" style="margin-top:8px">
+  <div class="cl-header">// AUTH + DATABASE</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">05</div>All 4 Supabase tables exist: <code>clients</code>, <code>posts</code>, <code>deployments</code>, <code>scrape_items</code></div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">06</div>Jerah Reeves client row exists in <code>clients</code> table — UUID copied and used in n8n workflows</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">07</div>LinkedIn OAuth2 token is valid — log into n8n Railway instance and re-auth if expired</div>
+</div>
+
+<div class="checklist" style="margin-top:8px">
+  <div class="cl-header">// PIPELINE TESTS</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">08</div>WF1 test: Postman POST → <code>{"text":"test","assetId":null}</code> → 200 → post visible on LinkedIn → delete test post</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">09</div>WF2 test: Postman POST → <code>{"topic":"...","assetType":"LinkedIn Post","clientId":"..."}</code> → 200 → row in <code>posts</code> AND <code>deployments</code></div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">10</div>WF3 test: Manually trigger Cron workflow → confirm <code>scrape_items</code> populated → confirm new <code>deployments</code> rows created</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">11</div>Sonner error toast fires when n8n webhook is unreachable (temporarily stop n8n, test the button)</div>
+</div>
+
+<div class="checklist" style="margin-top:8px">
+  <div class="cl-header">// END-TO-END DEMO FLOW</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">12</div>Deployment Queue table loads items from Supabase (not hardcoded)</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">13</div>"Review & Deploy" opens Sheet with the actual draft content from Supabase</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">14</div>"Approve & Deploy" posts to LinkedIn → green Sonner toast → queue item removed</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">15</div>Full e2e recorded as screen capture — backup if live demo glitches</div>
+  <div class="cl-item"><div class="cl-box"></div><div class="cl-n">16</div>Jerah's demo link is a real <code>https://your-app.vercel.app</code> — not localhost, not ngrok, not a Loom</div>
+</div>
+
+</div><!-- /content -->
+</main>
+</div><!-- /wrap -->
+
+<div class="footer">
+  <span>Meridian // Twin Engine · Master Build Plan · Rev 2</span>
+  <span>Stack: Next.js 14 · n8n Railway · Supabase · Claude claude-sonnet-4-6 · Apify · Serper · LinkedIn REST v2 · Vercel</span>
+</div>
+
+</body>
+</html>

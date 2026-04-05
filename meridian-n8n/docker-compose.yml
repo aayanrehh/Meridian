@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      # ── Public URL ─────────────────────────────────────────────────────────
+      # Dev: set to your ngrok URL (https://xxxx.ngrok-free.app)
+      # Prod: set to Railway public domain (https://meridian-n8n.up.railway.app)
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL}
+
+      # ── Auth ───────────────────────────────────────────────────────────────
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+
+      # ── Timezone ───────────────────────────────────────────────────────────
+      - GENERIC_TIMEZONE=America/New_York
+      - TZ=America/New_York
+
+      # ── CORS: allow Next.js to POST from both local and Vercel ─────────────
+      - N8N_CORS_ORIGIN=${N8N_CORS_ORIGIN}
+      
+      # ── Allow Code node to require('crypto') and read $env for HMAC verification ───────
+      - NODE_FUNCTION_ALLOW_BUILTIN=crypto
+      - NODE_FUNCTION_ALLOW_ENV=true
+      - N8N_ENV_VARS_IN_DEFAULT_EXECUTION_VM=true
+
+      # ── Disable noisy telemetry ────────────────────────────────────────────
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_PERSONALIZATION_ENABLED=false
+      - N8N_VERSION_NOTIFICATIONS_ENABLED=false
+
+      # ── Execution data: save errors for debugging ──────────────────────────
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=none
+      - EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS=true
+
+      # ── Use Postgres (Supabase) for execution storage, not SQLite ──────────
+      # This is critical for Railway — SQLite on a volume can corrupt on restart
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=${SUPABASE_DB_HOST}
+      - DB_POSTGRESDB_PORT=${SUPABASE_DB_PORT}
+      - DB_POSTGRESDB_DATABASE=${SUPABASE_DB_NAME}
+      - DB_POSTGRESDB_USER=${SUPABASE_DB_USER}
+      - DB_POSTGRESDB_PASSWORD=${SUPABASE_DB_PASSWORD}
+      - DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED=false
+
+      # ── API Keys exposed to n8n Code nodes via $env.* ─────────────────────
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SERPER_API_KEY=${SERPER_API_KEY}
+      - N8N_DEPLOY_WEBHOOK_SECRET=${N8N_DEPLOY_WEBHOOK_SECRET}
+      - JERAH_CLIENT_ID=${JERAH_CLIENT_ID}
+
+    volumes:
+      # Stores n8n credentials, workflow config (OAuth tokens live here)
+      # On Railway: provision a Volume mounted at /home/node/.n8n
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:

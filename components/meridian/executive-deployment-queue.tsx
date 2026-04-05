@@ -81,10 +81,11 @@ If you're building a bench of leaders under 30, hire for the training log, not t
 What's one standard your team rehearses weekly with zero exceptions?`;
 
 export function ExecutiveDeploymentQueue({ className }: { className?: string }) {
+  const [dbRows, setDbRows] = useState<any[]>([]);
   const [deployedIds, setDeployedIds] = useState<Set<string>>(() => new Set());
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [activeRowId, setActiveRowId] = useState<string>(ROWS[0].id);
-  const [draftBody, setDraftBody] = useState(DRAFT_COPY);
+  const [activeRowId, setActiveRowId] = useState<string>("");
+  const [draftBody, setDraftBody] = useState("");
   const [promptText, setPromptText] = useState("");
   const [promptLoading, setPromptLoading] = useState(false);
   const [regenLoading, setRegenLoading] = useState(false);
@@ -111,21 +112,54 @@ export function ExecutiveDeploymentQueue({ className }: { className?: string }) 
     tag: "sourced"; action: "deploy"; fadingIn: boolean;
   }>>([]);
 
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const res = await fetch("/api/posts");
+        if (res.ok) {
+          const posts = await res.json();
+          const mapped = posts.map((post: any) => ({
+            id: post.id,
+            asset: post.asset_type || "LinkedIn Post",
+            detail: post.focus || "Generated Draft",
+            source: "AI Engine",
+            publication: "Meridian Twin",
+            timeAgo: "just now",
+            score: 95,
+            reviewText: post.content,
+            tag: "sourced",
+            action: "deploy",
+          }));
+          setDbRows(mapped);
+          if (mapped.length > 0 && !activeRowId) {
+            setActiveRowId(mapped[0].id);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch posts:", err);
+      }
+    }
+    fetchPosts();
+  }, []);
+
+  const allRows = useMemo(() => [...injectedRows, ...dbRows], [injectedRows, dbRows]);
+
   const openReview = (rowId: string) => {
     setActiveRowId(rowId);
-    setDraftBody(DRAFT_COPY);
+    const row = allRows.find(r => r.id === rowId);
+    setDraftBody(row?.reviewText || "");
     setDeploySuccess(false);
     setDeployFlash(false);
     setSheetOpen(true);
   };
 
   const activeRow = useMemo(
-    () => ROWS.find((row) => row.id === activeRowId) ?? ROWS[0],
-    [activeRowId]
+    () => allRows.find((row) => row.id === activeRowId) ?? allRows[0] ?? {},
+    [activeRowId, allRows]
   );
 
-  const reviewRows = useMemo(() => ROWS.filter((row) => row.action === "deploy"), []);
-  const allRows = useMemo(() => [...injectedRows, ...ROWS], [injectedRows]);
+  const reviewRows = useMemo(() => dbRows.filter((row) => row.action === "deploy"), [dbRows]);
+  
   const tableRows = useMemo(
     () => allRows.filter((row) => !hiddenRowIds.has(row.id)),
     [allRows, hiddenRowIds]
@@ -163,6 +197,7 @@ export function ExecutiveDeploymentQueue({ className }: { className?: string }) 
   };
 
   const handleReviewApprove = () => {
+    if (!currentReviewRow) return;
     setDeployedIds((prev) => new Set(prev).add(currentReviewRow.id));
     toast("✓ Scheduled · Tue 9:14 AM", { duration: 2000 });
     moveToNextReviewCard();
@@ -173,7 +208,7 @@ export function ExecutiveDeploymentQueue({ className }: { className?: string }) 
   };
 
   const handleReviewRegen = () => {
-    if (reviewRegenLoading) return;
+    if (reviewRegenLoading || !currentReviewRow) return;
     setReviewRegenLoading(true);
     window.setTimeout(() => {
       setReviewCopies((prev) => ({
@@ -198,7 +233,7 @@ export function ExecutiveDeploymentQueue({ className }: { className?: string }) 
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [reviewModeOpen, currentReviewRow.id, reviewRegenLoading]);
+  }, [reviewModeOpen, currentReviewRow?.id, reviewRegenLoading]);
 
   useEffect(() => {
     if (reviewModeOpen) {
@@ -262,7 +297,7 @@ export function ExecutiveDeploymentQueue({ className }: { className?: string }) 
     window.setTimeout(() => {
       setIsFading(true);
       setTimeout(() => {
-        setDraftBody(`${DRAFT_COPY}\n\n[Regenerated] Framed for sharper executive tone.`);
+        setDraftBody(prev => `${prev}\n\n[Regenerated] Framed for sharper executive tone.`);
         setIsFading(false);
       }, 150);
       setRegenLoading(false);
@@ -296,7 +331,7 @@ export function ExecutiveDeploymentQueue({ className }: { className?: string }) 
         setSheetOpen(false);
         setDeploySuccess(false);
       }, 1500);
-      toast("✓ Post scheduled · Tue 9:14 AM", { theme: "dark" });
+      toast("✓ Post scheduled · Tue 9:14 AM");
     } catch {
       toast("Deploy request failed.");
     } finally {
